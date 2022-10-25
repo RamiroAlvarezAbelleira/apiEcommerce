@@ -120,9 +120,30 @@ const controlador = {
         try {
             const id = +req.params.id;
             const product = await db.Product.findByPk(id, {
-                include: [db.Brake,db.Brand,db.Image,db.WheelSize,db.Frame,db.Shift,db.Suspension, db.Size, db.Color]
-            });    
-            res.render('products/productDetail', {product,toThousand})
+                include: [{ model: db.Category, attributes: ['name'] }, { model: db.Brake, attributes: ['type'] }, { model: db.Brand, attributes: ['name'] }, { model: db.Image, attributes: ['fileName'] }, { model: db.WheelSize, attributes: ['number'] }, { model: db.Frame, attributes: ['name'] }, { model: db.Shift, attributes: ['number'] }, { model: db.Suspension, attributes: ['type'] }],
+                attributes: ['description', 'model', 'price', 'discount', 'id']
+            });
+
+            // the product was not found
+            if(!product){
+                let respuesta = {
+                    meta: {
+                        status: 404,
+                        url: `/productos/detalle/${id}`
+                    },
+                    data: 'El producto no existe'
+                }
+                res.status(404).json(respuesta)
+            }
+
+            let respuesta = {
+                meta: {
+                    status: 200,
+                    url: `/productos/detalle/${id}`
+                },
+                data: product
+            }
+            res.status(200).json(respuesta)
         } catch (error) {
             res.json({error: error.message});
         }
