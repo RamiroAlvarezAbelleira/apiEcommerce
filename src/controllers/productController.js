@@ -9,10 +9,107 @@ const controlador = {
 
     list: async (req, res) => {
         try {
-            const products = await db.Product.findAll({
-                include: [db.Image]
-            });
-            res.render('products/products', {products, toThousand});
+            let data;
+            let search;
+
+            // the page numbre is < or = to 0
+
+            if (req.query.page <= 0) {
+                let respuesta = {
+                    meta: {
+                        status: 400,
+                        url: `/productos${req.url}`
+                    },
+                    data: 'El numero de pagina no puede ser menor o igual a 0'
+                }
+                res.status(400).json(respuesta)
+            }
+
+            // search query si empty
+
+            if (req.query.search == "") {
+
+                let respuesta = {
+                    meta: {
+                        status: 400,
+                        url: `/productos${req.url}`,
+                    },
+                    data: 'Debe ingresar una condición de busqueda'
+                }
+                return res.status(400).json(respuesta);
+            }
+
+            if (req.query.page && req.query.search) {
+                search = req.query.search
+                data = await db.Product.findAndCountAll({
+                    include: [{ model: db.Category, attributes: ['name'] }, { model: db.Brake, attributes: ['type'] }, { model: db.Brand, attributes: ['name'] }, { model: db.Image, attributes: ['fileName'] }, { model: db.WheelSize, attributes: ['number'] }, { model: db.Frame, attributes: ['name'] }, { model: db.Shift, attributes: ['number'] }, { model: db.Suspension, attributes: ['type'] }],
+                    attributes: ['description', 'model', 'price', 'discount', 'id'],
+                    where: {description: {[Op.like]: '%' + search + '%'}},
+                    limit: 10,
+                    offset: (req.query.page - 1) * 10
+                })
+            } else if (req.query.page) {
+                data = await db.Product.findAndCountAll({
+                    include: [{ model: db.Category, attributes: ['name'] }, { model: db.Brake, attributes: ['type'] }, { model: db.Brand, attributes: ['name'] }, { model: db.Image, attributes: ['fileName'] }, { model: db.WheelSize, attributes: ['number'] }, { model: db.Frame, attributes: ['name'] }, { model: db.Shift, attributes: ['number'] }, { model: db.Suspension, attributes: ['type'] }],
+                    attributes: ['description', 'model', 'price', 'discount', 'id'],
+                    limit: 10,
+                    offset: (req.query.page - 1) * 10
+                })
+            } else if (req.query.search) {
+                search = req.query.search
+                data = await db.Product.findAndCountAll({
+                    include: [{ model: db.Category, attributes: ['name'] }, { model: db.Brake, attributes: ['type'] }, { model: db.Brand, attributes: ['name'] }, { model: db.Image, attributes: ['fileName'] }, { model: db.WheelSize, attributes: ['number'] }, { model: db.Frame, attributes: ['name'] }, { model: db.Shift, attributes: ['number'] }, { model: db.Suspension, attributes: ['type'] }],
+                    attributes: ['description', 'model', 'price', 'discount', 'id'],
+                    where: {description: {[Op.like]: '%' + search + '%'}}
+                })
+            } else {
+                data = await db.Product.findAndCountAll({
+                    include: [{ model: db.Category, attributes: ['name'] }, { model: db.Brake, attributes: ['type'] }, { model: db.Brand, attributes: ['name'] }, { model: db.Image, attributes: ['fileName'] }, { model: db.WheelSize, attributes: ['number'] }, { model: db.Frame, attributes: ['name'] }, { model: db.Shift, attributes: ['number'] }, { model: db.Suspension, attributes: ['type'] }],
+                    attributes: ['description', 'model', 'price', 'discount', 'id']
+                })
+            }
+
+            let products = [...data.rows]
+            let total = data.count
+
+            // nothing was found
+            if (total == 0) {
+
+                let respuesta = {
+                    meta: {
+                        status: 404,
+                        url: `/productos${req.url}`,
+                    },
+                    data: 'No se encontraron productos que cumplan con la condición'
+                }
+                res.status(404).json(respuesta);
+            };
+
+            // page number is greater than the total amount on the database
+            if (req.query.page && req.query.page > Math.ceil(total / 10)) {
+
+                let respuesta = {
+                    meta: {
+                        status: 400,
+                        url: `/api/productos${req.url}`,
+                    },
+                    data: 'El número de páginas disponibles es: ' + Math.ceil(total / 10)
+                }
+                res.status(400).json(respuesta);
+            };
+
+            let respuesta = {
+                meta: {
+                    status: 200,
+                    total: products.length,
+                    url: `/productos${req.url}`,
+                    next: (req.query.page && req.query.page * 10 < total) ? `/productos/?page=${+req.query.page + 1}${req.query.search ? '&search=' + req.query.search : ''}` : '',
+                    previous: +req.query.page > 1 ? `/productos/?page=${+req.query.page - 1}${req.query.search ? '&search=' + req.query.search : ''}` : ''
+                },
+                data: products
+            }
+
+            res.status(200).json(respuesta);
         } catch (error) {
             res.json(error.message)
         }

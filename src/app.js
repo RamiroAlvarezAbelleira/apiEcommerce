@@ -5,6 +5,7 @@ const publicPath = path.join(__dirname, '../public');
 const app = express();
 const cookies = require('cookie-parser')
 const port = 3000;
+const cors = require('cors');
 const productRoutes = require('./routes/productRoutes');
 const userRoutes = require('./routes/userRoutes');
 const session = require('express-session');
