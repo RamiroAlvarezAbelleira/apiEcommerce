@@ -12,9 +12,9 @@ const loggedUserRedMW = require('../middleware/loggedUserRedMW')
 
 router.get('/', userController.list);
 router.get('/:id', userController.detail);
-router.post('/crear', upload.array('image'), userController.store);
-//router.put('/editar/:id', upload.array('image'), userController.update);
-//router.delete('/eliminar/:id', userController.delete);
+router.post('/crear', upload.array('image'), validations, userController.store);
+router.put('/editar/:id', upload.array('image'), validations, userController.update);
+router.delete('/eliminar/:id', userController.delete);
 
 
 
