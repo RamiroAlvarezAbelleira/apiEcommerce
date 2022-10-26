@@ -274,7 +274,11 @@ const controlador = {
 
     delete: async (req, res) => {
         try {
+
             const { id } = req.params;
+            let data = await db.Product.findByPk(id);
+            const product = await data?.toJSON();
+
             let imagenes = await db.Image.findAll({
                 where: { productId: id }
             });
@@ -284,6 +288,7 @@ const controlador = {
                     fs.unlinkSync(path.resolve(__dirname, '../../public/images/products/' + files[i].fileName))
                 }
             };
+
             await db.Image.destroy({
                 where: {
                     productId: id
@@ -291,6 +296,7 @@ const controlador = {
             }, {
                 force: true
             });
+            
             await db.Product.destroy({
                 where: {
                     id
@@ -298,27 +304,20 @@ const controlador = {
             }, {
                 force: true
             });
-            res.redirect("/productos")
-        } catch (error) {
-            res.json(error.message)
-        }
-    },
 
-    search: async (req, res) => {
-        try {
-            let search = req.query.search;
-            let products = await db.Product.findAll({
-                where: {
-                    description: { [Op.like]: `%${search}%` }
+            let respuesta = {
+                meta: {
+                    status: 200,
+                    url: `/productos/eliminar/${id}`
                 },
-                include: [db.Image]
-            });
-            res.render('products/products', { products, toThousand });
+                data: product
+            }
+
+            res.status(200).json(respuesta)
         } catch (error) {
             res.json(error.message)
         }
     }
-
 }
 
 module.exports = controlador;
