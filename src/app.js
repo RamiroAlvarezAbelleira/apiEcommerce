@@ -13,6 +13,8 @@ const loggedUserMW = require('./middleware/loggedUserMW');
 
 /*SETTING*/
 
+app.use(cors());
+
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views'));
 app.use(express.static(publicPath));
