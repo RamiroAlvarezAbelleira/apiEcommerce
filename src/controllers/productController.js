@@ -150,50 +150,41 @@ const controlador = {
 
     },
 
-    productCreateForm: async (req, res) => {
-        try {
-            const brakes = await db.Brake.findAll();
-            const categories = await db.Category.findAll();
-            const brands = await db.Brand.findAll();
-            const colors = await db.Color.findAll();
-            const frames = await db.Frame.findAll();
-            const types = await db.Type.findAll();
-            const wheelSizes = await db.WheelSize.findAll();
-            const sizes = await db.Size.findAll();
-            const shifts = await db.Shift.findAll();
-            const suspentions = await db.Suspension.findAll();   
-            res.render('products/productCreate', {brakes,categories,brands,colors,frames,types,wheelSizes,sizes,shifts,suspentions})
-        } catch (error) {
-            res.json({error: error.message});
-        }
-    },
-
     create: async (req, res) => {
 
         try {
-            let product = req.body;
+            let data = req.body;
 
             // Validaciones de productos
 
-                const errors = validationResult(req);
+            let errors = validationResult(req);
             if (errors.isEmpty()) {
                 let imagenes= []
-                const productId = await db.Product.create(product);
+                let product = await db.Product.create(data);
                 for(let i = 0 ; i<req.files.length;i++) {
                     imagenes.push({
                         fileName: req.files[i].filename,
-                        productId: productId.id
+                        productId: product.id
                     })
                 }
+
+                let respuesta = {
+                    meta: {
+                        status: 200,
+                        url: '/productos/crear'
+                    },
+                    data: product
+                }
+
                 if (imagenes.length > 0) {
                     await db.Image.bulkCreate(imagenes)
-                    res.redirect('/productos')
+                    res.status(200).json(respuesta)
                 } else {
                     await db.Image.create([{
                         fileName: 'default-product-image.png',
                         productId: product.id,
                     }])
-                    res.redirect('/productos')
+                    res.status(200).json(respuesta)
                 }
                 
                 
@@ -204,17 +195,16 @@ const controlador = {
                     fs.unlinkSync(path.resolve(__dirname, '../../public/images/'+files[i].filename))
                 }
                 };
-                const brakes = await db.Brake.findAll();
-                const categories = await db.Category.findAll();
-                const brands = await db.Brand.findAll();
-                const colors = await db.Color.findAll();
-                const frames = await db.Frame.findAll();
-                const types = await db.Type.findAll();
-                const wheelSizes = await db.WheelSize.findAll();
-                const sizes = await db.Size.findAll();
-                const shifts = await db.Shift.findAll();
-                const suspentions = await db.Suspension.findAll();
-                res.render('products/productCreate',{errors: errors.mapped(), oldData: req.body,brakes,categories,brands,colors,frames,types,wheelSizes,sizes,shifts,suspentions});
+
+                let respuesta = {
+                    meta: {
+                        status: 400,
+                        url: '/productos/crear'
+                    },
+                    data: errors.mapped()
+                }
+                
+                res.status(400).json(respuesta)
             }
         } catch (error) {
             res.json({error: error.message});
