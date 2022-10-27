@@ -150,6 +150,129 @@ const controlador = {
 
     },
 
+    formInfo: async (req, res) => {
+        try {
+            // traemos las categorias 
+            let categories = await db.Category.findAll()
+            // Creamos un array 
+            let categoriesJson = [];
+
+            categories.forEach( category => {
+                categoriesJson.push(category.toJSON())
+            });
+
+            // traemos los frenos 
+            let brakes = await db.Brake.findAll()
+            // Creamos un array 
+            let brakesJson = [];
+
+            brakes.forEach( brake => {
+                brakesJson.push(brake.toJSON())
+            });
+
+            // traemos las marcas 
+            let brands = await db.Brand.findAll()
+            // Creamos un array 
+            let brandsJson = [];
+
+            brands.forEach( brand => {
+                brandsJson.push(brand.toJSON())
+            });
+
+            // traemos los rodados 
+            let wheelSizes = await db.WheelSize.findAll()
+            // Creamos un array 
+            let wheelSizesJson = [];
+
+            wheelSizes.forEach( wheelSize => {
+                wheelSizesJson.push(wheelSize.toJSON())
+            });
+
+            // traemos los cuadros 
+            let frames = await db.Frame.findAll()
+            // Creamos un array 
+            let framesJson = [];
+
+            frames.forEach( frame => {
+                framesJson.push(frame.toJSON())
+            });
+
+            // traemos los cambios 
+            let shifts = await db.Shift.findAll()
+            // Creamos un array 
+            let shiftsJson = [];
+
+            shifts.forEach( shift => {
+                shiftsJson.push(shift.toJSON())
+            });
+
+            // traemos las suspensiones 
+            let suspensions = await db.Suspension.findAll()
+            // Creamos un array 
+            let suspensionsJson = [];
+
+            suspensions.forEach( suspension => {
+                suspensionsJson.push(suspension.toJSON())
+            });
+
+            // traemos los tipos 
+            let types = await db.Type.findAll()
+            // Creamos un array 
+            let typesJson = [];
+
+            types.forEach( type => {
+                typesJson.push(type.toJSON())
+            });
+
+            // traemos los talles
+            let sizes = await db.Size.findAll()
+            // Creamos un array 
+            let sizesJson = [];
+
+            sizes.forEach( size => {
+                sizesJson.push(size.toJSON())
+            });
+
+            // traemos los colores
+            let colors = await db.Color.findAll()
+            // Creamos un array 
+            let colorsJson = [];
+
+            colors.forEach( color => {
+                colorsJson.push(color.toJSON())
+            });
+
+            // Creamos un objeto literal con todos los datos traidos
+
+            let data = {
+                categories: categoriesJson,
+                types:  typesJson,
+                sizes: sizesJson,
+                colors: colorsJson,
+                brakes: brakesJson,
+                brands: brandsJson,
+                wheelSizes: wheelSizesJson,
+                frames: framesJson,
+                shifts: shiftsJson,
+                suspensions: suspensionsJson
+            }
+
+            // creamos la respuesta
+
+            let respuesta = {
+                meta: {
+                    status: 200,
+                    url: '/api/productos/info-formulario'
+                },
+                data: data
+            }
+
+            res.status(200).json(respuesta)
+        } catch (error) {
+            res.json(error.message);
+        }
+    },
+
     create: async (req, res) => {
 
         try {
@@ -296,7 +419,7 @@ const controlador = {
             }, {
                 force: true
             });
-            
+
             await db.Product.destroy({
                 where: {
                     id
