@@ -190,7 +190,7 @@ const controlador = {
     productDetail: async (req, res) => {
         try {
             const id = +req.params.id;
-            const product = await db.Product.findByPk(id, {
+            let product = await db.Product.findByPk(id, {
                 include: [{ model: db.Category, attributes: ['name'] }, { model: db.Brake, attributes: ['type'] }, { model: db.Brand, attributes: ['name'] }, { model: db.Image, attributes: ['fileName'] }, { model: db.WheelSize, attributes: ['number'] }, { model: db.Frame, attributes: ['name'] }, { model: db.Shift, attributes: ['number'] }, { model: db.Suspension, attributes: ['type'] }],
                 attributes: ['description', 'model', 'price', 'discount', 'id']
             });
@@ -206,6 +206,17 @@ const controlador = {
                 }
                 res.status(404).json(respuesta)
             }
+
+            product = {
+                price: product.price,
+                discount: product.discount,
+                id: product.id,
+                brand: product.Brand.name,
+                model: product.model,
+                description: product.description,
+                category: product.Category.name,
+                images: `/images/products/${product.Images[0].fileName}`
+            };
 
             let respuesta = {
                 meta: {
