@@ -72,6 +72,21 @@ const controlador = {
             let products = [...data.rows]
             let total = data.count
 
+            products = products.map(product => {
+
+                return {
+                    price: product.price,
+                    discount: product.discount,
+                    id: product.id,
+                    brand: product.Brand.name,
+                    model: product.model,
+                    description: product.description,
+                    category: product.Category.name,
+                    images: `/images/products/${product.Images[0].fileName}`,
+                    detail: `/productos/detalle/${product.id}`
+                };
+            })
+
             // nothing was found
             if (total == 0) {
 
@@ -91,7 +106,7 @@ const controlador = {
                 let respuesta = {
                     meta: {
                         status: 400,
-                        url: `/api/productos${req.url}`,
+                        url: `/productos${req.url}`,
                     },
                     data: 'El número de páginas disponibles es: ' + Math.ceil(total / 10)
                 }
