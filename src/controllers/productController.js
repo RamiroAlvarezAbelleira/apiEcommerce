@@ -131,6 +131,62 @@ const controlador = {
 
     },
 
+    highlights: async (req, res) => {
+        try {
+            let data = await db.Product.findAndCountAll({
+                    include: [{ model: db.Category, attributes: ['name'] }, { model: db.Brake, attributes: ['type'] }, { model: db.Brand, attributes: ['name'] }, { model: db.Image, attributes: ['fileName'] }, { model: db.WheelSize, attributes: ['number'] }, { model: db.Frame, attributes: ['name'] }, { model: db.Shift, attributes: ['number'] }, { model: db.Suspension, attributes: ['type'] }],
+                    attributes: ['description', 'model', 'price', 'discount', 'id'],
+                    order: [['discount', 'DESC']],
+                    limit: 8
+                })
+
+            let products = [...data.rows]
+            let total = data.count
+
+            products = products.map(product => {
+
+                return {
+                    price: product.price,
+                    discount: product.discount,
+                    id: product.id,
+                    brand: product.Brand.name,
+                    model: product.model,
+                    description: product.description,
+                    category: product.Category.name,
+                    images: `/images/products/${product.Images[0].fileName}`,
+                    detail: `/productos/detalle/${product.id}`
+                };
+            })
+
+            // nothing was found
+            if (total == 0) {
+
+                let respuesta = {
+                    meta: {
+                        status: 404,
+                        url: `/productos${req.url}`,
+                    },
+                    data: 'No se encontraron productos que cumplan con la condición'
+                }
+                res.status(404).json(respuesta);
+            };
+
+            let respuesta = {
+                meta: {
+                    status: 200,
+                    total: products.length,
+                    url: `/productos${req.url}`,
+                },
+                data: products
+            }
+
+            res.status(200).json(respuesta);
+        } catch (error) {
+            res.json(error.message)
+        }
+
+    },
+
     productDetail: async (req, res) => {
         try {
             const id = +req.params.id;

@@ -7,6 +7,7 @@ const productValidation = require('../middleware/productValidatorMW');
 
 /*RUTAS*/
 router.get('/', productController.list);
+router.get('/destacados', productController.highlights);
 router.get('/info-formulario', productController.formInfo);
 router.post('/crear', upload.array('image'), productValidation, productController.create);
 router.get('/detalle/:id', productController.productDetail);
