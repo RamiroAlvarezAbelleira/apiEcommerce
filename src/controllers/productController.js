@@ -191,7 +191,16 @@ const controlador = {
         try {
             const id = +req.params.id;
             let product = await db.Product.findByPk(id, {
-                include: [{ model: db.Category, attributes: ['name'] }, { model: db.Brake, attributes: ['type'] }, { model: db.Brand, attributes: ['name'] }, { model: db.Image, attributes: ['fileName'] }, { model: db.WheelSize, attributes: ['number'] }, { model: db.Frame, attributes: ['name'] }, { model: db.Shift, attributes: ['number'] }, { model: db.Suspension, attributes: ['type'] }],
+                include: [{ model: db.Category, attributes: ['name'] }, 
+                { model: db.Brake, attributes: ['type'] }, 
+                { model: db.Brand, attributes: ['name'] }, 
+                { model: db.Image, attributes: ['fileName'] }, 
+                { model: db.WheelSize, attributes: ['number'] }, 
+                { model: db.Frame, attributes: ['name'] }, 
+                { model: db.Shift, attributes: ['number'] }, 
+                { model: db.Suspension, attributes: ['type'] }, 
+                { model: db.Color, attributes: ['name'] }, 
+                { model: db.Size, attributes: ['name'] }],
                 attributes: ['description', 'model', 'price', 'discount', 'id']
             });
 
@@ -214,6 +223,13 @@ const controlador = {
                 brand: product.Brand.name,
                 model: product.model,
                 description: product.description,
+                brake: product.Brake.type,
+                wheelSize: product.WheelSize.number,
+                frame: product.Frame.name,
+                shift: product.Shift.number,
+                suspension: product.Suspension.type,
+                color: product.Color.name,
+                size: product.Size.name,
                 category: product.Category.name,
                 images: `/images/products/${product.Images[0].fileName}`
             };
