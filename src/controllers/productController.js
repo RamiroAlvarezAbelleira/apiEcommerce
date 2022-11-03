@@ -40,7 +40,7 @@ const controlador = {
             }
 
             if (req.query.page && req.query.search) {
-                search = req.query.search
+                search = req.query.search.toUpperCase()
                 data = await db.Product.findAndCountAll({
                     include: [{ model: db.Category, attributes: ['name'] }, { model: db.Brake, attributes: ['type'] }, { model: db.Brand, attributes: ['name'] }, { model: db.Image, attributes: ['fileName'] }, { model: db.WheelSize, attributes: ['number'] }, { model: db.Frame, attributes: ['name'] }, { model: db.Shift, attributes: ['number'] }, { model: db.Suspension, attributes: ['type'] }],
                     attributes: ['description', 'model', 'price', 'discount', 'id'],
@@ -56,7 +56,7 @@ const controlador = {
                     offset: (req.query.page - 1) * 10
                 })
             } else if (req.query.search) {
-                search = req.query.search
+                search = req.query.search.toUpperCase()
                 data = await db.Product.findAndCountAll({
                     include: [{ model: db.Category, attributes: ['name'] }, { model: db.Brake, attributes: ['type'] }, { model: db.Brand, attributes: ['name'] }, { model: db.Image, attributes: ['fileName'] }, { model: db.WheelSize, attributes: ['number'] }, { model: db.Frame, attributes: ['name'] }, { model: db.Shift, attributes: ['number'] }, { model: db.Suspension, attributes: ['type'] }],
                     attributes: ['description', 'model', 'price', 'discount', 'id'],
