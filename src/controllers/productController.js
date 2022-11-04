@@ -215,7 +215,7 @@ const controlador = {
                 }
                 res.status(404).json(respuesta)
             }
-
+            
             product = {
                 price: product.price,
                 discount: product.discount,
@@ -223,16 +223,17 @@ const controlador = {
                 brand: product.Brand.name,
                 model: product.model,
                 description: product.description,
-                brake: product.Brake.type,
-                wheelSize: product.WheelSize.number,
-                frame: product.Frame.name,
-                shift: product.Shift.number,
-                suspension: product.Suspension.type,
-                color: product.Color.name,
-                size: product.Size.name,
+                brake: product.Brake ? product.Brake.type : product.Brake,
+                wheelSize: product.WheelSize ? product.WheelSize.number : product.WheelSize,
+                frame: product.Frame ? product.Frame.name : product.Frame,
+                shift: product.Shift ? product.Shift.number : product.Shift,
+                suspension: product.Suspension ? product.Suspension.type : product.Suspension,
+                color: product.Color ? product.Color.name : product.Color,
+                size: product.Size ? product.Size.name : product.Size,
                 category: product.Category.name,
                 images: `/images/products/${product.Images[0].fileName}`
             };
+            
 
             let respuesta = {
                 meta: {
