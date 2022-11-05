@@ -11,8 +11,9 @@ const loggedUserRedMW = require('../middleware/loggedUserRedMW')
 /*RUTAS*/
 
 router.get('/', userController.list);
-router.get('/:id', userController.detail);
+router.post('/ingresar', userController.login);
 router.post('/crear', upload.array('image'), validations, userController.store);
+router.get('/:id', userController.detail);
 router.put('/editar/:id', upload.array('image'), validations, userController.update);
 router.delete('/eliminar/:id', userController.delete);
 

@@ -241,6 +241,47 @@ const controlador = {
         } catch (error) {
             res.json(error.message)
         }  
+    },
+
+    login: async (req, res) => {
+        try {
+            let user = await User.findOne({where: {'email': req.body.email}}).then(data => data?.toJSON())
+
+            if (user && (bcryptjs.compareSync(req.body.password, user.password))) {
+                delete user.password
+
+                let respuesta = {
+                    meta: {
+                        status: 200,
+                        url: 'usuarios/ingresar'
+                    },
+                    data: user
+                }
+
+                res.status(200).json(respuesta)
+            } else {
+                let errors = {
+                    email : {
+                        msg: 'Credenciales inválidas'
+                    },
+                    password : {
+                        msg: 'Credenciales inválidas'
+                    }
+                }
+
+                let respuesta = {
+                    meta: {
+                        status: 400,
+                        url: 'usuarios/ingresar'
+                    },
+                    error: errors
+                }
+
+                res.status(400).json(respuesta)
+            }
+        } catch (error) {
+            res.json(error.message)
+        }
     }
 }
 
