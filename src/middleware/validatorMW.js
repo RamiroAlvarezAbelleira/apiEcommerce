@@ -26,9 +26,7 @@ const validations = [
         }
         return true;
     }),
-    body('user-confirm-password').notEmpty().withMessage('Debe reingresar la contraseña'),
-    body('phonenumber').notEmpty().withMessage('Debe ingresar un numero de telefono'),
-    body('userTerms').notEmpty().withMessage('Debe aceptar los terminos de usuario'),
+    body('repassword').notEmpty().withMessage('Debe reingresar la contraseña'),
     body('image').custom((value, { req }) => {
         let files = req.files;
         let acceptedExtensions = ['.jpg', '.jpeg', '.png'];
