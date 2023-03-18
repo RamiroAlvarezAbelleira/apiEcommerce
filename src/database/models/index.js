@@ -12,7 +12,7 @@ let sequelize;
 if (process.env.JAWSDB_MARIA_URL) {
   sequelize = new Sequelize(process.env.JAWSDB_MARIA_URL);
 } else {
-  sequelize = new Sequelize(config.database, config.username, config.password, config);
+  sequelize = new Sequelize(config.development.database, config.development.username, config.development.password, config);
 }
 
 fs
