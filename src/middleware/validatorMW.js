@@ -21,7 +21,7 @@ const validations = [
     }),
     body('password').notEmpty().withMessage('Debe ingresar una contraseña').bail()
     .custom((value, { req }) => {
-        if(value != req.body['user-confirm-password']) {
+        if(value != req.body['repassword']) {
             throw new Error('las contraseñas deben coincidir')
         }
         return true;

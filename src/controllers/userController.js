@@ -115,8 +115,9 @@ const controlador = {
             let errors = validationResult(req);
             if (errors.isEmpty()) {
                 user.password = bcryptjs.hashSync(user.password, 10);
+                user.roleId = 2
                 user.image = req.files?.filename ? req.files.filename : 'default-user.png'
-                delete user['user-confirm-password']
+                delete user['repassword']
 
                 let newUser = await User.create(user)
                 newUser = await newUser.toJSON()
