@@ -115,8 +115,9 @@ const controlador = {
             let errors = validationResult(req);
             if (errors.isEmpty()) {
                 user.password = bcryptjs.hashSync(user.password, 10);
+                user.roleId = 2
                 user.image = req.files?.filename ? req.files.filename : 'default-user.png'
-                delete user['user-confirm-password']
+                delete user['repassword']
 
                 let newUser = await User.create(user)
                 newUser = await newUser.toJSON()
@@ -156,25 +157,23 @@ const controlador = {
             let userToUpdateId = +req.params.id;
             let updatedUser = {...req.body};
             let errors = validationResult(req);
+            let storedUser = await User.findByPk(userToUpdateId);
 
             if (errors.isEmpty()) {
 
-                if (updatedUser.password) {
+                if (updatedUser.password !== '') {
                     updatedUser.password = bcryptjs.hashSync(updatedUser.password, 10);
-                    delete updatedUser['user-confirm-password']
+                    delete updatedUser['repassword']
+                } else {
+                    updatedUser.password = storedUser.password
                 }
-
+                
                 if (updatedUser.image) {
                     updatedUser.image = req.files.filename 
                 }
                 
                 let user = await User.update(updatedUser, {where: {id: userToUpdateId}})
-
-                user = await user.toJSON()
-
-                delete user?.password;
-                delete user?.roleId;
-
+                
                 let respuesta = {
                     meta: {
                         status: 200,
