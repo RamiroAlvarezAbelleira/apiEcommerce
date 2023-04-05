@@ -200,6 +200,7 @@ const controlador = {
                 { model: db.Shift, attributes: ['number'] }, 
                 { model: db.Suspension, attributes: ['type'] }, 
                 { model: db.Color, attributes: ['name'] }, 
+                { model: db.Type, attributes: ['name'] }, 
                 { model: db.Size, attributes: ['name'] }],
                 attributes: ['description', 'model', 'price', 'discount', 'id']
             });
@@ -230,7 +231,74 @@ const controlador = {
                 suspension: product.Suspension ? product.Suspension.type : product.Suspension,
                 color: product.Color ? product.Color.name : product.Color,
                 size: product.Size ? product.Size.name : product.Size,
+                type: product.Type ? product.Type.name : product.Type,
                 category: product.Category.name,
+                images: `/images/products/${product.Images[0].fileName}`
+            };
+            
+
+            let respuesta = {
+                meta: {
+                    status: 200,
+                    url: `/productos/detalle/${id}`
+                },
+                data: product
+            }
+            res.status(200).json(respuesta)
+        } catch (error) {
+            res.json({ error: error.message });
+        }
+
+    },
+
+    productDetailInfo: async (req, res) => {
+        try {
+            const id = +req.params.id;
+            let product = await db.Product.findByPk(id, {
+                include: [{ model: db.Category, attributes: ['id'] }, 
+                { model: db.Brake, attributes: ['id'] }, 
+                { model: db.Brand, attributes: ['id'] }, 
+                { model: db.Image, attributes: ['fileName'] }, 
+                { model: db.WheelSize, attributes: ['id'] }, 
+                { model: db.Frame, attributes: ['id'] }, 
+                { model: db.Shift, attributes: ['id'] }, 
+                { model: db.Suspension, attributes: ['id'] }, 
+                { model: db.Color, attributes: ['id'] }, 
+                { model: db.Type, attributes: ['id'] }, 
+                { model: db.Size, attributes: ['id'] }],
+                attributes: ['description', 'model', 'price', 'discount', 'id']
+            });
+
+            console.log(product.Brake.id)
+
+            // the product was not found
+            if (!product) {
+                let respuesta = {
+                    meta: {
+                        status: 404,
+                        url: `/productos/detalle-info/${id}`
+                    },
+                    data: 'El producto no existe'
+                }
+                res.status(404).json(respuesta)
+            }
+            
+            product = {
+                price: product.price,
+                discount: product.discount,
+                id: product.id,
+                brand: product.Brand.id,
+                model: product.model,
+                description: product.description,
+                brake: product.Brake ? product.Brake.id : product.Brake,
+                wheelSize: product.WheelSize ? product.WheelSize.id : product.WheelSize,
+                frame: product.Frame ? product.Frame.id : product.Frame,
+                shift: product.Shift ? product.Shift.id : product.Shift,
+                suspension: product.Suspension ? product.Suspension.id : product.Suspension,
+                color: product.Color ? product.Color.id : product.Color,
+                size: product.Size ? product.Size.id : product.Size,
+                type: product.Type ? product.Type.id : product.Type,
+                category: product.Category.id,
                 images: `/images/products/${product.Images[0].fileName}`
             };
             
@@ -383,11 +451,13 @@ const controlador = {
             if (errors.isEmpty()) {
                 let imagenes = []
                 let product = await db.Product.create(data);
-                for (let i = 0; i < req.files.length; i++) {
-                    imagenes.push({
-                        fileName: req.files[i].filename,
-                        productId: product.id
-                    })
+                if (req.files) {
+                    for (let i = 0; i < req.files.length; i++) {
+                        imagenes.push({
+                            fileName: req.files[i].filename,
+                            productId: product.id
+                        })
+                    }
                 }
 
                 let respuesta = {

@@ -6,7 +6,7 @@ validations = [
     body('typeId').notEmpty().withMessage('Debe seleccionar un tipo de producto.'),
     body('description').isLength({min:8}).withMessage('Debe completar la descripción y debe tener mínimo 8 caracteres.'),
     body('image').custom((value,{req})=> {
-        if(!req.files.length > 0){
+        if(!req.files?.length > 0){
             throw new Error('Debe cargar una imagen');
         } else {
             let extensions = [".jpg", ".png", ".jpeg"];

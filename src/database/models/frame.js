@@ -18,6 +18,7 @@ module.exports = (sequelize, DataTypes) => {
   }, {
     sequelize,
     modelName: 'Frame',
+    timestamps: false
   });
   return Frame;
 };
