@@ -269,8 +269,6 @@ const controlador = {
                 attributes: ['description', 'model', 'price', 'discount', 'id']
             });
 
-            console.log(product.Brake.id)
-
             // the product was not found
             if (!product) {
                 let respuesta = {
@@ -518,19 +516,24 @@ const controlador = {
                         id: idToUpdate
                     }
                 });
-                for (let i = 0; i < req.files.length; i++) {
-                    imagenes.push({
-                        fileName: req.files[i].filename,
-                        productId: idToUpdate
-                    })
+                if (req.files) {
+                    for (let i = 0; i < req.files.length; i++) {
+                        imagenes.push({
+                            fileName: req.files[i].filename,
+                            productId: idToUpdate
+                        })
+                    }
                 }
+                
                 if (imagenes.length > 0) {
-                    const oldImages = await db.Image.findAll({ where: { productId: idToUpdate } })
-                    oldImages.forEach(image => {
-                        fs.unlinkSync(path.resolve(__dirname, '../../public/images/' + image.fileName))
-                    })
+                    // const oldImages = await db.Image.findAll({ where: { productId: idToUpdate } })
+                    // console.log("---------oldImages--------", oldImages)
+                    // oldImages.forEach(image => {
+                    //     fs.unlinkSync(path.resolve(__dirname, '../../public/images/' + image.fileName))
+                    // })
                     await db.Image.destroy({ where: { productId: idToUpdate } })
-                    await db.Image.bulkCreate(imagenes)
+                    let result = await db.Image.bulkCreate(imagenes)
+                    console.log("--------resultado--------- ",result)
                 }
 
                 let respuesta = {
