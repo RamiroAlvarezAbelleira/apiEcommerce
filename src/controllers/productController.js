@@ -574,15 +574,15 @@ const controlador = {
             let data = await db.Product.findByPk(id);
             const product = await data?.toJSON();
 
-            let imagenes = await db.Image.findAll({
-                where: { productId: id }
-            });
-            if (imagenes) {
-                let files = imagenes.filter(image => image.fileName != 'default-product-image.png');
-                for (let i = 0; i < files.length; i++) {
-                    fs.unlinkSync(path.resolve(__dirname, '../../public/images/products/' + files[i].fileName))
-                }
-            };
+            // let imagenes = await db.Image.findAll({
+            //     where: { productId: id }
+            // });
+            // if (imagenes) {
+            //     let files = imagenes.filter(image => image.fileName != 'default-product-image.png');
+            //     for (let i = 0; i < files.length; i++) {
+            //         fs.unlinkSync(path.resolve(__dirname, '../../public/images/products/' + files[i].fileName))
+            //     }
+            // };
 
             await db.Image.destroy({
                 where: {
