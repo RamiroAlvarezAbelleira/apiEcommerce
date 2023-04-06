@@ -173,13 +173,15 @@ const controlador = {
                 }
                 
                 let user = await User.update(updatedUser, {where: {id: userToUpdateId}})
-                
+
+                delete updatedUser?.password
+
                 let respuesta = {
                     meta: {
                         status: 200,
                         url: `/usuarios/editar/${userToUpdateId}`
                     },
-                    data: user
+                    data: updatedUser
                 }
 
                 res.status(200).json(respuesta)

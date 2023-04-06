@@ -18,6 +18,7 @@ module.exports = (sequelize, DataTypes) => {
   }, {
     sequelize,
     modelName: 'WheelSize',
+    timestamps: false
   });
   return WheelSize;
 };

@@ -200,6 +200,7 @@ const controlador = {
                 { model: db.Shift, attributes: ['number'] }, 
                 { model: db.Suspension, attributes: ['type'] }, 
                 { model: db.Color, attributes: ['name'] }, 
+                { model: db.Type, attributes: ['name'] }, 
                 { model: db.Size, attributes: ['name'] }],
                 attributes: ['description', 'model', 'price', 'discount', 'id']
             });
@@ -230,7 +231,72 @@ const controlador = {
                 suspension: product.Suspension ? product.Suspension.type : product.Suspension,
                 color: product.Color ? product.Color.name : product.Color,
                 size: product.Size ? product.Size.name : product.Size,
+                type: product.Type ? product.Type.name : product.Type,
                 category: product.Category.name,
+                images: `/images/products/${product.Images[0].fileName}`
+            };
+            
+
+            let respuesta = {
+                meta: {
+                    status: 200,
+                    url: `/productos/detalle/${id}`
+                },
+                data: product
+            }
+            res.status(200).json(respuesta)
+        } catch (error) {
+            res.json({ error: error.message });
+        }
+
+    },
+
+    productDetailInfo: async (req, res) => {
+        try {
+            const id = +req.params.id;
+            let product = await db.Product.findByPk(id, {
+                include: [{ model: db.Category, attributes: ['id'] }, 
+                { model: db.Brake, attributes: ['id'] }, 
+                { model: db.Brand, attributes: ['id'] }, 
+                { model: db.Image, attributes: ['fileName'] }, 
+                { model: db.WheelSize, attributes: ['id'] }, 
+                { model: db.Frame, attributes: ['id'] }, 
+                { model: db.Shift, attributes: ['id'] }, 
+                { model: db.Suspension, attributes: ['id'] }, 
+                { model: db.Color, attributes: ['id'] }, 
+                { model: db.Type, attributes: ['id'] }, 
+                { model: db.Size, attributes: ['id'] }],
+                attributes: ['description', 'model', 'price', 'discount', 'id']
+            });
+
+            // the product was not found
+            if (!product) {
+                let respuesta = {
+                    meta: {
+                        status: 404,
+                        url: `/productos/detalle-info/${id}`
+                    },
+                    data: 'El producto no existe'
+                }
+                res.status(404).json(respuesta)
+            }
+            
+            product = {
+                price: product.price,
+                discount: product.discount,
+                id: product.id,
+                brandId: product.Brand.id,
+                model: product.model,
+                description: product.description,
+                brakeId: product.Brake ? product.Brake.id : product.Brake,
+                wheelSizeId: product.WheelSize ? product.WheelSize.id : product.WheelSize,
+                frameId: product.Frame ? product.Frame.id : product.Frame,
+                shiftId: product.Shift ? product.Shift.id : product.Shift,
+                suspensionId: product.Suspension ? product.Suspension.id : product.Suspension,
+                colorId: product.Color ? product.Color.id : product.Color,
+                sizeId: product.Size ? product.Size.id : product.Size,
+                typeId: product.Type ? product.Type.id : product.Type,
+                categoryId: product.Category.id,
                 images: `/images/products/${product.Images[0].fileName}`
             };
             
@@ -383,11 +449,13 @@ const controlador = {
             if (errors.isEmpty()) {
                 let imagenes = []
                 let product = await db.Product.create(data);
-                for (let i = 0; i < req.files.length; i++) {
-                    imagenes.push({
-                        fileName: req.files[i].filename,
-                        productId: product.id
-                    })
+                if (req.files) {
+                    for (let i = 0; i < req.files.length; i++) {
+                        imagenes.push({
+                            fileName: req.files[i].filename,
+                            productId: product.id
+                        })
+                    }
                 }
 
                 let respuesta = {
@@ -448,19 +516,24 @@ const controlador = {
                         id: idToUpdate
                     }
                 });
-                for (let i = 0; i < req.files.length; i++) {
-                    imagenes.push({
-                        fileName: req.files[i].filename,
-                        productId: idToUpdate
-                    })
+                if (req.files) {
+                    for (let i = 0; i < req.files.length; i++) {
+                        imagenes.push({
+                            fileName: req.files[i].filename,
+                            productId: idToUpdate
+                        })
+                    }
                 }
+                
                 if (imagenes.length > 0) {
-                    const oldImages = await db.Image.findAll({ where: { productId: idToUpdate } })
-                    oldImages.forEach(image => {
-                        fs.unlinkSync(path.resolve(__dirname, '../../public/images/' + image.fileName))
-                    })
+                    // const oldImages = await db.Image.findAll({ where: { productId: idToUpdate } })
+                    // console.log("---------oldImages--------", oldImages)
+                    // oldImages.forEach(image => {
+                    //     fs.unlinkSync(path.resolve(__dirname, '../../public/images/' + image.fileName))
+                    // })
                     await db.Image.destroy({ where: { productId: idToUpdate } })
-                    await db.Image.bulkCreate(imagenes)
+                    let result = await db.Image.bulkCreate(imagenes)
+                    console.log("--------resultado--------- ",result)
                 }
 
                 let respuesta = {
@@ -501,15 +574,15 @@ const controlador = {
             let data = await db.Product.findByPk(id);
             const product = await data?.toJSON();
 
-            let imagenes = await db.Image.findAll({
-                where: { productId: id }
-            });
-            if (imagenes) {
-                let files = imagenes.filter(image => image.fileName != 'default-product-image.png');
-                for (let i = 0; i < files.length; i++) {
-                    fs.unlinkSync(path.resolve(__dirname, '../../public/images/products/' + files[i].fileName))
-                }
-            };
+            // let imagenes = await db.Image.findAll({
+            //     where: { productId: id }
+            // });
+            // if (imagenes) {
+            //     let files = imagenes.filter(image => image.fileName != 'default-product-image.png');
+            //     for (let i = 0; i < files.length; i++) {
+            //         fs.unlinkSync(path.resolve(__dirname, '../../public/images/products/' + files[i].fileName))
+            //     }
+            // };
 
             await db.Image.destroy({
                 where: {
