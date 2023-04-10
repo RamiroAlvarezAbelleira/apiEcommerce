@@ -8,6 +8,7 @@ const port = 3000;
 const cors = require('cors');
 const productRoutes = require('./routes/productRoutes');
 const userRoutes = require('./routes/userRoutes');
+const cartRoutes = require('./routes/cartRoutes');
 const session = require('express-session');
 const loggedUserMW = require('./middleware/loggedUserMW');
 
@@ -32,7 +33,8 @@ app.use(loggedUserMW);
 /*RUTAS*/
 
 app.use('/productos', productRoutes);
-app.use('/usuarios', userRoutes)
+app.use('/usuarios', userRoutes);
+app.use('/carrito', cartRoutes);
 app.listen(process.env.PORT || port, () => console.log(`servidor funcionando en el puerto ${port}`));
 
 
