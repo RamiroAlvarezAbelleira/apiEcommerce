@@ -36,17 +36,11 @@ const controlador = {
             let cartTotal = data.count
 
             cartItems = cartItems.map((item) => {
-                // let images = await db.Image.findAll({
-                //     attributes: ['fileName'],
-                //     where: { productId: {[Op.like]: item.productId}}
-                // })
-
                 return {
                     product: {
                         description: item.Product.description,
                         price: item.Product.price,
-                        discount: item.Product.discount,
-                        // image: `/images/products/${images[0].fileName}`
+                        discount: item.Product.discount
                     },
                     quantity: item.quantity,
                     id: item.id
@@ -65,6 +59,29 @@ const controlador = {
             res.status(200).json(respuesta)
         } catch (error) {
             res.status(400).json({ error: error.message });
+        }
+    },
+
+    delete: async (req, res) => {
+        try {
+            let { id } = req.params
+
+            await db.Cart.destroy({
+                where: {
+                    id
+                }
+            })
+
+            let respuesta = {
+                meta: {
+                    status: 200,
+                    url: `/carrito/eliminar/${id}`
+                },
+                data: 'producto eliminado del carrito'
+            }
+            res.status(200).json(respuesta)
+        } catch (error) {
+            res.status(400).json({ error: error.message })
         }
     }
 }
