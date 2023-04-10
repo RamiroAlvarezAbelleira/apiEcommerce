@@ -35,11 +35,11 @@ const controlador = {
             let cartItems = [...data.rows]
             let cartTotal = data.count
 
-            cartItems = cartItems.map(async (item) => {
-                let images = await db.Image.findAll({
-                    attributes: ['fileName'],
-                    where: { productId: {[Op.like]: item.productId}}
-                })
+            cartItems = cartItems.map((item) => {
+                // let images = await db.Image.findAll({
+                //     attributes: ['fileName'],
+                //     where: { productId: {[Op.like]: item.productId}}
+                // })
 
                 return {
                     product: {
