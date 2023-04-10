@@ -46,7 +46,7 @@ const controlador = {
                         description: item.Product.description,
                         price: item.Product.price,
                         discount: item.Product.discount,
-                        image: `/images/products/${images[0].fileName}`
+                        // image: `/images/products/${images[0].fileName}`
                     },
                     quantity: item.quantity,
                     id: item.id
