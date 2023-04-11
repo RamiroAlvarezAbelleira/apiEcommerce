@@ -19,7 +19,34 @@ const controlador = {
 
             res.status(201).json(respuesta)
         } catch (error) {
-            res.json({ error: error.message });
+            res.status(400).json({ error: error.message });
+        }
+    },
+
+    update: async (req, res) => {
+        try {
+            const {id} = req.params
+            let updatedCart = req.body;
+
+            let cartItem = await db.Cart.update({
+                ...updatedCart
+            }, {
+                where: {
+                    id: id
+                }
+            });
+
+            let respuesta = {
+                meta: {
+                    status: 201,
+                    url: `carrito/editar/${id}`
+                },
+                data: cartItem
+            }
+
+            res.status(201).json(respuesta)
+        } catch (error) {
+            res.status(400).json({ error: error.message });
         }
     },
 
