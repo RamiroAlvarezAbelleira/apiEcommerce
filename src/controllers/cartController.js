@@ -61,6 +61,15 @@ const controlador = {
 
             let cartItems = [...data.rows]
             let cartTotal = data.count
+            let totalPrice = 0;
+            
+            cartItems.forEach((item) => {
+                if ( item.Product.discount > 0 ) {
+                    return totalPrice += Math.round((item.Product.price / 100) * (100 - item.Product.discount)) * item.quantity
+                } else {
+                    return totalPrice += (item.Product.price * item.quantity)
+                }
+            })
 
             cartItems = cartItems.map((item) => {
                 return {
@@ -80,7 +89,8 @@ const controlador = {
                     url: `/carrito/${userId}`
                 },
                 data: cartItems,
-                total: cartTotal
+                total: cartTotal,
+                totalPrice: totalPrice
             }
 
             res.status(200).json(respuesta)
