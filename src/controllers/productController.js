@@ -314,7 +314,7 @@ const controlador = {
                 { model: db.Color, attributes: ['name'] }, 
                 { model: db.Type, attributes: ['name'] }, 
                 { model: db.Size, attributes: ['name'] }],
-                attributes: ['description', 'model', 'price', 'discount', 'id']
+                attributes: ['description', 'model', 'price', 'discount', 'id', 'info']
             });
 
             // the product was not found
@@ -345,7 +345,8 @@ const controlador = {
                 size: product.Size ? product.Size.name : product.Size,
                 type: product.Type ? product.Type.name : product.Type,
                 category: product.Category.name,
-                images: `/images/products/${product.Images[0].fileName}`
+                images: `/images/products/${product.Images[0].fileName}`,
+                info: product.info
             };
             
 
@@ -378,7 +379,7 @@ const controlador = {
                 { model: db.Color, attributes: ['id'] }, 
                 { model: db.Type, attributes: ['id'] }, 
                 { model: db.Size, attributes: ['id'] }],
-                attributes: ['description', 'model', 'price', 'discount', 'id']
+                attributes: ['description', 'model', 'price', 'discount', 'id', 'info']
             });
 
             // the product was not found
@@ -409,7 +410,8 @@ const controlador = {
                 sizeId: product.Size ? product.Size.id : product.Size,
                 typeId: product.Type ? product.Type.id : product.Type,
                 categoryId: product.Category.id,
-                images: `/images/products/${product.Images[0].fileName}`
+                images: `/images/products/${product.Images[0].fileName}`,
+                info: product.info
             };
             
 
